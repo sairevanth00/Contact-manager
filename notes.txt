@@ -1,0 +1,16 @@
+API End Points 
+
+Get all contacts
+GET - /api/contacts
+
+Get Contact
+GET - /api/contacts/:id
+
+Create Contact
+POST - /api/contacts
+
+Update Contact
+PUT - /api/contacts/:id
+
+Delete Contact
+DELETE - /api/contacts/:id
