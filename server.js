@@ -7,9 +7,10 @@ const conncectDb = require('./config/dbConnection')
 const port = process.env.PORT || 5000;
 
 
-conncectDb()
-app.listen(port, ()=> {
-    console.log(`Server is running at port ${port}`)
+conncectDb().then(() => {
+    app.listen(port, ()=> {
+        console.log(`Server is running at port ${port}`)
+    })
 })
 
 app.use(express.json());
