@@ -7,7 +7,11 @@ const Contact = require("../models/contactModel");
  * @param {*} res
  */
 const getContacts = asyncHandler(async (req, res) => {
-  const contacts = await Contact.find({user_id: req.user.id});
+  const contacts = await Contact.find({ user_id: req.user.id });
+  if(!contacts) {
+    res.status(404);
+    throw new Error("Contact Not Found!");
+  }
   res.status(200).json(contacts);
 });
 
@@ -17,13 +21,12 @@ const getContacts = asyncHandler(async (req, res) => {
  * @param {*} res
  */
 const getContact = asyncHandler(async (req, res) => {
-  try {
-    const contact = await Contact.findById(req.params.id);
-    res.status(200).json(contact);
-  } catch (err) {
+  const contact = await Contact.findById(req.params.id);
+  if (!contact) {
     res.status(404);
     throw new Error("Contact Not Found!");
   }
+  res.status(200).json(contact);
 });
 
 /**
@@ -33,16 +36,21 @@ const getContact = asyncHandler(async (req, res) => {
  */
 const createContact = asyncHandler(async (req, res) => {
   const { name, email, phoneno } = req.body;
-  try {
-    const contact = await Contact.create({ name, email, phoneno, user_id: req.user.id });
-    if(!name || !email || !phoneno) {
-      res.status(400);
-      throw new Error("All Fields are mandatory!")
-    }
-    res.status(201).json(contact);
-  } catch (err) {
-    throw new Error(err);
+  const contact = await Contact.create({
+    name,
+    email,
+    phoneno,
+    user_id: req.user.id,
+  });
+  if (!contact) {
+    res.status(404);
+    throw new Error("Contact Not Found!");
   }
+  if (!name || !email || !phoneno) {
+    res.status(400);
+    throw new Error("All Fields are mandatory!");
+  }
+  res.status(201).json(contact);
 });
 
 /**
@@ -51,26 +59,21 @@ const createContact = asyncHandler(async (req, res) => {
  * @param {*} res
  */
 const updateContact = asyncHandler(async (req, res) => {
-  // try {
-    const contact = await Contact.findById(req.params.id);
-    if(!contact) {
-      res.status(404);
-      throw new Error("Contact Not Found!");
-    }
-    if(contact.user_id.toString() !== req.user.id) {
-      res.status(403);
-      throw new Error("User don't have permission to update other user contacts")
-    }
-    const updatedContact = await Contact.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    res.status(200).json(updatedContact);
-  // } catch (err) {
-  //   res.status(404);
-  //   throw new Error("Contact Not Found!");
-  // }
+  const contact = await Contact.findById(req.params.id);
+  if (!contact) {
+    res.status(404);
+    throw new Error("Contact Not Found!");
+  }
+  if (contact.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("User don't have permission to update other user contacts");
+  }
+  const updatedContact = await Contact.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+  res.status(200).json(updatedContact);
 });
 
 /**
@@ -79,22 +82,17 @@ const updateContact = asyncHandler(async (req, res) => {
  * @param {*} res
  */
 const deleteContact = asyncHandler(async (req, res) => {
-  // try {
-    const contact = await Contact.findById(req.params.id);
-    if (!contact) {
-      res.status(404);
-      throw new Error("Contact Not Found!");
-    }
-    if(contact.user_id.toString() !== req.user.id) {
-      res.status(403);
-      throw new Error("User don't have permission to update other user contacts")
-    }
-    await Contact.deleteOne({ _id: req.params.id });
-    res.status(200).json(contact);
-  // } catch (err) {
-  //   res.status(404);
-  //   throw new Error("Contact Not Found!");
-  // }
+  const contact = await Contact.findById(req.params.id);
+  if (!contact) {
+    res.status(404);
+    throw new Error("Contact Not Found!");
+  }
+  if (contact.user_id.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error("User don't have permission to update other user contacts");
+  }
+  await Contact.deleteOne({ _id: req.params.id });
+  res.status(200).json(contact);
 });
 
 module.exports = {

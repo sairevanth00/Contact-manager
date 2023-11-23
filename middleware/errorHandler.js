@@ -25,13 +25,6 @@ const errorHandler = (err, req, res, next) => {
       });
       break;
     case constants.NOT_FOUND:
-      {
-        console.log({
-          title: "Not Found",
-          message: err.message,
-          stackTrace: err.stack,
-        })
-      }
       res.json({
         title: "Not Found",
         message: err.message,
@@ -46,7 +39,7 @@ const errorHandler = (err, req, res, next) => {
       });
       break;
     default:
-        console.log("No Error All Good!")
+      console.log("No Error All Good!");
       break;
   }
 };
